@@ -5,13 +5,13 @@ import './App.css';
 import Cell from './Cell.js'
 
 const messages = {
-    'win': 'You won...',
-    'lose': 'Game Over',
-    'challenge': 'Remember these cells',
-    'play': 'Pick a cell'
-}
+  win: 'You won...',
+  lose: 'Game Over',
+  challenge: 'Remember these cells now',
+  play: 'Which cells were blue',
+};
 
-class App extends Component {
+class Game extends Component {
     timerId;
     state = {
         gameStatus: 'challenge', // 'challenge', 'play', 'win', 'lose'
@@ -31,57 +31,52 @@ class App extends Component {
         }, 3000);
     }
 
-    ComponentWillUncount() {
+    componentWillUnmount() {
         clearTimeout(this.timerId);
     }
 
     isCellActive = id => {
         const isCellChallenge = this.challengeCellIds.indexOf(id) >= 0;
         return isCellChallenge && this.state.gameStatus === 'challenge';
-    }
+    };
 
     onCellClick = cellId => {
         const isCellChallenge = this.challengeCellIds.indexOf(cellId) >= 0;
-        console.log(isCellChallenge);
-        // closures gives access to this.setState
-        this.setState((prevState) => {
+        this.setState(prevState => {
             return {
-                clickedCells: [...this.state.clickedCells, cellId],
-            }
+                clickedCells: [...prevState.clickedCells, cellId],
+            };
         });
     };
 
     render() {
-        console.log(this.challengeCellIds);
-      return (
-          <div className="game">
-              <div className="help">
-                  You will have 3 seconds to memorize X blue random cells
+        return (
+            <div className="game">
+                <div className="help">
+                    You will have 3 seconds to memorize X blue random cells
         </div>
-              <div className="grid">
-                  {this.cellids.map(i => {
-                      const isCellChallenge = this.challengeCellIds.indexOf(i) >= 0;
-                      const isCellClicked = this.state.clickedCells.indexOf(i) >= 0;
+                <div className="grid challenge">
+                    {this.cellIds.map(id => {
+                        const isCellChallenge = this.challengeCellIds.indexOf(id) >= 0;
+                        const isCellClicked = this.state.clickedCells.indexOf(id) >= 0;
 
-                      return (
-                          <Cell
-                              key={i}
-                              id={i}
-                              onClickAction={this.onCellClick(i)}
-                              isActive={this.isCellActive(i)}
-                              isChallenge={isCellChallenge}
-                              isClicked={isCellClicked}
-                          />
+                        return (
+                            <Cell
+                                key={id}
+                                id={id}
+                                onClickAction={this.onCellClick}
+                                isActive={this.isCellActive(id)}
+                                isChallenge={isCellChallenge}
+                                isClicked={isCellClicked}
+                            />
                         );
-                  })}
-              </div>
-              <button>Start</button>
-              <div className="message">
-                  {this.messages[this.state.gameStatus];}
-              </div>
-          </div>
-      );
-  }
+                    })}
+                </div>
+                <button onClick={this.props.playAgainAction}>Play Again</button>
+                <div className="message">{messages[this.state.gameStatus]}</div>
+            </div>
+        );
+    }
 }
 
-export default App;
+export default Game;
